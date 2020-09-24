@@ -1,3 +1,5 @@
+.idea
+data-mysql
 
 ###> symfony/framework-bundle ###
 /.env.local
