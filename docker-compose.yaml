@@ -3,7 +3,7 @@ version: '3'
 services:
   db:
     container_name: chargeports_db
-    image: mysql:5.7
+    image: mysql:8.0.21
     restart: always
     environment:
       MYSQL_DATABASE: 'db'
@@ -46,7 +46,7 @@ services:
     networks:
       - chargeports-network
     environment:
-      - DATABASE_URL=mysql://user:password@db:3306/db?serverVersion=5.7
+      - DATABASE_URL=mysql://user:password@db:3306/db?serverVersion=8.0.21
 networks:
   chargeports-network:
     driver: bridge
