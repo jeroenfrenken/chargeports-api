@@ -4,16 +4,21 @@
 namespace App\Controller;
 
 
+use Nelmio\ApiDocBundle\Annotation\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api")
+ */
 class AuthenticationController extends AbstractController
 {
 
     /**
      * @Route(
-     *     "/login"
+     *     "/login",
+     *     methods={"POST"}
      * )
      */
     public function login()
@@ -25,7 +30,8 @@ class AuthenticationController extends AbstractController
 
     /**
      * @Route(
-     *     "/me"
+     *     "/me",
+     *     methods={"GET"}
      * )
      *
      * @IsGranted("ROLE_USER")
