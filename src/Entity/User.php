@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -53,6 +54,7 @@ class User implements UserInterface
 
     public function __construct()
     {
+        $this->setCreatedAt(new DateTime());
         $this->userTokens = new ArrayCollection();
     }
 

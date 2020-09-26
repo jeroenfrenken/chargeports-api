@@ -3,12 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserToken;
 use App\Form\LoginType;
+use App\Form\RegisterType;
 use App\Model\LoginDTO;
 use App\Model\RegisterDTO;
+use App\Service\UserService;
+use App\Util\GenerateUtil;
 use Swagger\Annotations as SWG;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -45,27 +52,44 @@ class AuthenticationController extends AbstractController
      * )
      *
      * @param Request $request
+     * @param UserRepository $userRepository
      * @return JsonResponse
      */
     public function login(
-        Request $request
+        Request $request,
+        EntityManagerInterface $em,
+        UserRepository $userRepository
     )
     {
-        $data = new LoginDTO();
+        $loginDto = new LoginDTO();
 
-        $form = $this->createForm(LoginType::class, $data);
+        $form = $this->createForm(LoginType::class, $loginDto);
         $form->submit(json_decode($request->getContent(), true), true);
 
         if ($form->isSubmitted()) {
+            $user = $userRepository->findOneByEmail($loginDto->getEmail());
+
+            if ($user !== null && UserService::validatePassword($loginDto->getPassword(), $user->getPassword())) {
+                $userToken = (new UserToken())
+                    ->setUser($user)
+                    ->setToken(GenerateUtil::generateApiToken());
+
+                $em->persist($userToken);
+                $em->flush();
+
+                return $this->json([
+                    'message' => $userToken->getToken()
+                ]);
+            }
+
             return $this->json([
-                'email' => $data->getEmail(),
-                'password' => $data->getPassword(),
-            ]);
+                'message' => 'Email or Password not valid'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $this->json([
-            'message' => 'Login'
-        ]);
+            'message' => 'Error'
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -92,28 +116,43 @@ class AuthenticationController extends AbstractController
      *     description="Register success"
      * )
      *
+     * @param EntityManagerInterface $em
      * @param Request $request
      * @return JsonResponse
      */
     public function register(
+        EntityManagerInterface $em,
         Request $request
     )
     {
         $data = new RegisterDTO();
 
-        $form = $this->createForm(LoginType::class, $data);
+        $form = $this->createForm(RegisterType::class, $data);
         $form->submit(json_decode($request->getContent(), true), true);
 
         if ($form->isSubmitted()) {
+            $user = (new User())
+                ->setEmail($data->getEmail())
+                ->setFirstName($data->getFirstName())
+                ->setLastName($data->getLastName())
+                ->setPassword(UserService::hashPassword($data->getPassword()));
+
+            $userToken = (new UserToken())
+                ->setUser($user)
+                ->setToken(GenerateUtil::generateApiToken());
+
+            $em->persist($user);
+            $em->persist($userToken);
+            $em->flush();
+
             return $this->json([
-                'email' => $data->getEmail(),
-                'password' => $data->getPassword(),
+                'message' => $userToken->getToken()
             ]);
         }
 
         return $this->json([
-            'message' => 'Register'
-        ]);
+            'message' => 'Error'
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**

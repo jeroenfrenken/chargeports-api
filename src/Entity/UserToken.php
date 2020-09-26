@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserTokenRepository;
@@ -38,6 +39,12 @@ class UserToken
      * @ORM\Column(type="datetime")
      */
     private $lastUsedAt;
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new DateTime());
+        $this->setLastUsedAt(new DateTime());
+    }
 
     public function getId(): ?int
     {
