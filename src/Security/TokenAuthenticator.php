@@ -1,9 +1,9 @@
 <?php
-// src/Security/TokenAuthenticator.php
+
 namespace App\Security;
 
-use App\Entity\Users;
-use App\Entity\UserTokens;
+use App\Repository\UserTokenRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +16,17 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
-    private $em;
+    private EntityManagerInterface $em;
+    private UserTokenRepository $userTokenRepository;
     private const TOKEN_HEADER = 'x-api-key';
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(
+        EntityManagerInterface $em,
+        UserTokenRepository $userTokenRepository
+    )
     {
         $this->em = $em;
+        $this->userTokenRepository = $userTokenRepository;
     }
 
     /**
@@ -56,13 +61,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
             return null;
         }
 
-        $token = $this->em->getRepository(UserTokens::class)->findOneBy([
-            'token' => $credentials
-        ]);
+        $token = $this->userTokenRepository->findOneByToken($credentials);
 
         if ($token === null) return null;
 
-        // if a User is returned, checkCredentials() is called
+        $token->setLastUsedAt(new DateTime());
+        $this->em->flush();
+
         return $token->getUser();
     }
 
@@ -97,11 +102,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $data = [
-            // you may want to customize or obfuscate the message first
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
-
-            // or to translate this message
-            // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
+            'message' => 'Failed to authenticate'
         ];
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
@@ -116,7 +117,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         $data = [
-            // you might translate this message
             'message' => 'Authentication Required'
         ];
 

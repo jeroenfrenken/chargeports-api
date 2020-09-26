@@ -6,13 +6,13 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\UsersRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=UsersRepository::class)
+ * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class Users implements UserInterface
+class User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -47,7 +47,7 @@ class Users implements UserInterface
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=UserTokens::class, mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=UserToken::class, mappedBy="user", orphanRemoval=true)
      */
     private $userTokens;
 
@@ -121,6 +121,11 @@ class Users implements UserInterface
         return $this;
     }
 
+    public function getFullName()
+    {
+        return "{$this->getFirstName()} {$this->getLastName()}";
+    }
+
     public function getRoles()
     {
         return ["ROLE_USER"];
@@ -142,14 +147,14 @@ class Users implements UserInterface
     }
 
     /**
-     * @return Collection|UserTokens[]
+     * @return Collection|UserToken[]
      */
     public function getUserTokens(): Collection
     {
         return $this->userTokens;
     }
 
-    public function addUserToken(UserTokens $userToken): self
+    public function addUserToken(UserToken $userToken): self
     {
         if (!$this->userTokens->contains($userToken)) {
             $this->userTokens[] = $userToken;
@@ -159,7 +164,7 @@ class Users implements UserInterface
         return $this;
     }
 
-    public function removeUserToken(UserTokens $userToken): self
+    public function removeUserToken(UserToken $userToken): self
     {
         if ($this->userTokens->contains($userToken)) {
             $this->userTokens->removeElement($userToken);

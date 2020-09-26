@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UserTokensRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserTokenRepository;
 
 /**
- * @ORM\Entity(repositoryClass=UserTokensRepository::class)
+ * @ORM\Entity(repositoryClass=UserTokenRepository::class)
  */
-class UserTokens
+class UserToken
 {
     /**
      * @ORM\Id
@@ -19,7 +19,7 @@ class UserTokens
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="userTokens")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="userTokens")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
@@ -44,12 +44,12 @@ class UserTokens
         return $this->id;
     }
 
-    public function getUser(): ?Users
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?Users $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
