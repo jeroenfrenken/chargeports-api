@@ -1,0 +1,20 @@
+security:
+    providers:
+        users:
+            entity:
+                class: 'App\Entity\User'
+                property: 'email'
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: true
+            lazy: true
+            logout: ~
+
+            guard:
+                authenticators:
+                    - App\Security\TokenAuthenticator
+
+    access_control:
