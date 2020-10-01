@@ -1,4 +1,4 @@
-# Chargeports App
+# Chargeports Api
 
 ## Setting up Project
 
@@ -13,7 +13,15 @@ This command will start the docker containers. And you can access the applicatio
 
 This will start a shell session into the php container where you can do composer related commands. And access the php bin/console commands from symfony
 
+### Install composer dependencies
+
+In the docker container execute 
+
+`composer install`
+
 ### Running Migrations
+
+In the docker container execute 
 
 `php bin/console doctrine:migrations:migrate`
 
