@@ -96,9 +96,6 @@
     "doctrine/sql-formatter": {
         "version": "1.1.1"
     },
-    "exsyst/swagger": {
-        "version": "v0.4.1"
-    },
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
@@ -248,6 +245,9 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/http-client-contracts": {
+        "version": "v2.2.0"
+    },
     "symfony/http-foundation": {
         "version": "v5.1.5"
     },
@@ -334,6 +334,12 @@
     "symfony/security-http": {
         "version": "v5.1.5"
     },
+    "symfony/serializer": {
+        "version": "v5.1.6"
+    },
+    "symfony/serializer-pack": {
+        "version": "v1.0.3"
+    },
     "symfony/service-contracts": {
         "version": "v2.2.0"
     },
@@ -347,7 +353,7 @@
         "version": "v2.2.0"
     },
     "symfony/twig-bridge": {
-        "version": "v5.1.5"
+        "version": "v5.1.6"
     },
     "symfony/twig-bundle": {
         "version": "5.0",
