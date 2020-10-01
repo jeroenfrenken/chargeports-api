@@ -29,7 +29,7 @@ Say `yes`
 
 ### Access OpenApi UI
 
-You can view the api documententation under `http://localhost/api/doc`
+You can view the api documentation under `http://localhost/api/doc`
 
 ## Development
 
