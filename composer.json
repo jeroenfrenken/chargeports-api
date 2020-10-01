@@ -65,7 +65,7 @@
         "symfony/polyfill-php56": "*"
     },
     "scripts": {
-      "test": "./bin/phpunit",
+      "test": "./bin/phpunit --testdox",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
