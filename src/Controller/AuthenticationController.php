@@ -10,7 +10,7 @@ use App\Model\LoginDTO;
 use App\Model\RegisterDTO;
 use App\Service\UserService;
 use App\Util\GenerateUtil;
-use Swagger\Annotations as SWG;
+use OpenApi\Annotations as OA;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -26,29 +26,43 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class AuthenticationController extends AbstractController
 {
-
     /**
      * @Route(
      *     "/login",
      *     methods={"POST"}
      * )
      *
-     * @SWG\Post(
+     * @OA\Post(
      *     operationId="authenticationLogin",
-     *     security={},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          description="LoginType",
-     *          type="json",
-     *          required=true,
-     *          @Model(type=App\Form\LoginType::class)
+     *     security={}
+     * )
+     *
+     * @OA\RequestBody(
+     *     @Model(type=App\Form\LoginType::class)
+     * )
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Authentication success",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="token", type="string"),
      *     )
      * )
      *
-     * @SWG\Response(
-     *     response="200",
-     *     description="Authentication success"
+     * @OA\Response(
+     *     response="400",
+     *     description="Authentication failed because of credentials",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string"),
+     *     )
+     * )
+     *
+     * @OA\Response(
+     *     response="500",
+     *     description="Authentication failed because of server error",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string"),
+     *     )
      * )
      *
      * @param Request $request
@@ -78,7 +92,7 @@ class AuthenticationController extends AbstractController
                 $em->flush();
 
                 return $this->json([
-                    'message' => $userToken->getToken()
+                    'token' => $userToken->getToken()
                 ]);
             }
 
@@ -98,22 +112,37 @@ class AuthenticationController extends AbstractController
      *     methods={"POST"}
      * )
      *
-     * @SWG\Post(
+     * @OA\Post(
      *     operationId="authenticationRegister",
-     *     security={},
-     *     @SWG\Parameter(
-     *          name="body",
-     *          in="body",
-     *          description="RegisterType",
-     *          type="json",
-     *          required=true,
-     *          @Model(type=App\Form\RegisterType::class)
+     *     security={}
+     * )
+     *
+     * @OA\RequestBody(
+     *     @Model(type=App\Form\RegisterType::class)
+     * )
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Register success",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="token", type="string"),
      *     )
      * )
      *
-     * @SWG\Response(
-     *     response="200",
-     *     description="Register success"
+     * @OA\Response(
+     *     response="400",
+     *     description="Register failed because of credentials",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string"),
+     *     )
+     * )
+     *
+     * @OA\Response(
+     *     response="500",
+     *     description="Register failed because of server error",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string"),
+     *     )
      * )
      *
      * @param EntityManagerInterface $em
@@ -146,7 +175,7 @@ class AuthenticationController extends AbstractController
             $em->flush();
 
             return $this->json([
-                'message' => $userToken->getToken()
+                'token' => $userToken->getToken()
             ]);
         }
 
@@ -161,16 +190,17 @@ class AuthenticationController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * @SWG\Get(
+     * @OA\Get(
      *     operationId="authenticationMe"
      * )
      *
-     * @SWG\Response(
+     * @OA\Response(
      *     response="200",
-     *     description="Fetches the user"
+     *     description="Fetches the user",
+     *     @Model(type=App\Entity\User::class, groups={"read"})
      * )
      *
-     * @SWG\Response(
+     * @OA\Response(
      *     response="401",
      *     description="Authentication failed"
      * )
@@ -183,8 +213,8 @@ class AuthenticationController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $this->json([
-            'email' => $user->getEmail(),
+        return $this->json($user, Response::HTTP_OK, [], [
+            'groups' => 'read'
         ]);
     }
 }
