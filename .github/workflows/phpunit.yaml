@@ -35,5 +35,5 @@ jobs:
       run: docker ps
 
       # execute tests using PHPUnit
-      name: run PHPUnit
-      run docker exec chargeports_app composer test
+    - name: run PHPUnit
+      run: docker exec chargeports_app composer test
