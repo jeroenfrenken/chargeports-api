@@ -36,3 +36,9 @@ You can view the api documentation under `http://localhost/api/doc`
 - Please create OpenApi documentation for each api call
 - Create a new branch off master and create a pull request before merging master
 - Use latest PHP 7.4 functionality 
+
+## Debugging
+
+### bad gateway error
+PHP has crashed. Execute `composer install` in the docker container this will also trigger the cache clear command and 
+this will show the error. 
