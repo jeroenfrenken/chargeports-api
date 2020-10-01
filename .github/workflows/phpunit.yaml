@@ -10,26 +10,26 @@ jobs:
     # Name the Job
     name: unit test API code
     # Set the type of machine to run on
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
+    env:
+      DEFAULT_BRANCH: master
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  env:
-    DEFAULT_BRANCH: master
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  steps:
+    steps:
     # Checks out a copy of the repository on the ubuntu-latest machine
     - name: Checkout code
       uses: actions/checkout@v2
-
+      
       # Run the docker environment
     - name: Build the docker-compose stack
       run: docker-compose up -d
-
-      # Wait to ensure containers are up
+    
+    # Wait to ensure containers are up
+    - name: pause to allow conainers to spin up
       uses: jakejarvis/wait-action@master
       with:
         time: '60s'
-
+        
     # check docker container status
     - name: Check running containers
       run: docker ps
