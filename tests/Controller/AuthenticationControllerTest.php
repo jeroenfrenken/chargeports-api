@@ -8,37 +8,51 @@ use GuzzleHttp;
 
 class AuthenticationControllerTest extends TestCase
 {
-    private $http;
+  private $http;
 
-    public function setUp() : void
-    {
-        $this->http = new GuzzleHttp\Client(['base_uri' => 'https://httpbin.org/']);
-    }
+  public function setUp(): void
+  {
+    # using 'web' instead of localhost due to docker networking
+    $this->http = new GuzzleHttp\Client(['base_uri' => 'http://web/api/']);
+  }
 
-    public function tearDown() : void {
-        $this->http = null;
-    }
+  public function tearDown(): void
+  {
+    $this->http = null;
+  }
 
-    public function testGet()
-    {
-        $response = $this->http->request('GET', 'user-agent');
+  public function testRegister()
+  {
+    $response = $this->http->request('POST', 'register', [
+      'json' =>
+      ['email' => 'Automated@test.chargeports.com',
+      'firstName' => 'automated',
+      'lastName' => 'test',
+      'password' => 'Test11@fgh'
+      ]
+    ]);
 
-        $this->assertEquals(200, $response->getStatusCode());
+    $this->assertEquals(200, $response->getStatusCode());
+  }
 
-        $contentType = $response->getHeaders()["Content-Type"][0];
-        $this->assertEquals("application/json", $contentType);
+  public function testLogin()
+  {
+    $response = $this->http->request('POST', 'login', [
+      'json' =>
+      ['email' => 'Automated@test.chargeports.com',
+      'password' => 'Test11@fgh'
+      ]
+    ]);
 
-        $userAgent = json_decode($response->getBody())->{"user-agent"};
-        $this->assertRegexp('/Guzzle/', $userAgent);
-    }
+    $this->assertEquals(200, $response->getStatusCode());
+  }
 
-    public function testPut()
-    {
-        $response = $this->http->request('PUT', 'user-agent', ['http_errors' => false]);
-
-        $this->assertEquals(405, $response->getStatusCode());
-    }
-
-
+#  public function testMe()
+#  {
+#    $response = $this->http->request('GET', 'me', 
+#      ['auth' => ['automated@test.chargeports.com', 'Test11@fgh']]);
+#    $this->assertEquals(200, $response->getStatusCode());
+#  }
 
 }
+
