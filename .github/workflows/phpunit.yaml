@@ -28,7 +28,7 @@ jobs:
     - name: pause to allow conainers to spin up
       uses: jakejarvis/wait-action@master
       with:
-        time: '60s'
+        time: '30s'
         
     # check docker container status
     - name: Check running containers
@@ -36,7 +36,7 @@ jobs:
 
     # execute tests using PHPUnit
     - name: run PHPUnit
-      run: docker exec chargeports_app composer test >> TestResults.txt
+      run: docker exec chargeports_app composer test | tee TestResults.txt
     
     # store test results
     - name: Store test results
