@@ -33,6 +33,15 @@ jobs:
     # check docker container status
     - name: Check running containers
       run: docker ps
+      
+    # prepare database
+    - name: create database using doctrine ORM
+      run: php bin/console doctrine:database:create
+
+    # prepare database
+    - name: execute migrations using doctrine ORM
+      run: php bin/console doctrine:migrations:migrate
+
 
     # execute tests using PHPUnit
     - name: run PHPUnit
