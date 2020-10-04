@@ -35,8 +35,8 @@ jobs:
       run: docker ps
       
     # prepare database
-    - name: create database using doctrine ORM
-      run: docker exec chargeports_app php bin/console doctrine:database:create
+    #- name: create database using doctrine ORM
+    #  run: docker exec chargeports_app php bin/console doctrine:database:create
 
     # prepare database
     - name: execute migrations using doctrine ORM
