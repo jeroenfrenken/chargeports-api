@@ -28,7 +28,7 @@ jobs:
     - name: pause to allow conainers to spin up
       uses: jakejarvis/wait-action@master
       with:
-        time: '10s'
+        time: '30s'
         
     # check docker container status
     - name: Check running containers
