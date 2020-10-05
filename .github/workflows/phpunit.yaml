@@ -25,10 +25,10 @@ jobs:
       run: docker-compose up -d
     
     # Wait to ensure containers are up
-    - name: pause to allow conainers to spin up
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '30s'
+    #- name: pause to allow conainers to spin up
+    #  uses: jakejarvis/wait-action@master
+    #  with:
+    #    time: '30s'
         
     # check docker container status
     - name: Check running containers
