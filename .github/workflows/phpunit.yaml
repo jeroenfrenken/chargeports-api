@@ -25,19 +25,15 @@ jobs:
       run: docker-compose up -d
     
     # Wait to ensure containers are up
-    #- name: pause to allow conainers to spin up
-    #  uses: jakejarvis/wait-action@master
-    #  with:
-    #    time: '30s'
+    - name: pause to allow conainers to spin up
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '10s'
         
     # check docker container status
     - name: Check running containers
       run: docker ps
       
-    # prepare database
-    #- name: create database using doctrine ORM
-    #  run: docker exec chargeports_app php bin/console doctrine:database:create
-
     # prepare database
     - name: execute migrations using doctrine ORM
       run: docker exec chargeports_app php bin/console doctrine:migrations:migrate
