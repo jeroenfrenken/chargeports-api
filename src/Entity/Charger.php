@@ -55,6 +55,30 @@ class Charger
      */
     private $chargerConnections;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $AddressLine;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $Town;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $StateOrProvince;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $Postcode;
+
     public function __construct()
     {
         $this->chargerConnections = new ArrayCollection();
@@ -150,6 +174,54 @@ class Charger
                 $chargerConnection->setCharger(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAddressLine(): ?string
+    {
+        return $this->AddressLine;
+    }
+
+    public function setAddressLine(string $AddressLine): self
+    {
+        $this->AddressLine = $AddressLine;
+
+        return $this;
+    }
+
+    public function getTown(): ?string
+    {
+        return $this->Town;
+    }
+
+    public function setTown(string $Town): self
+    {
+        $this->Town = $Town;
+
+        return $this;
+    }
+
+    public function getStateOrProvince(): ?string
+    {
+        return $this->StateOrProvince;
+    }
+
+    public function setStateOrProvince(string $StateOrProvince): self
+    {
+        $this->StateOrProvince = $StateOrProvince;
+
+        return $this;
+    }
+
+    public function getPostcode(): ?string
+    {
+        return $this->Postcode;
+    }
+
+    public function setPostcode(string $Postcode): self
+    {
+        $this->Postcode = $Postcode;
 
         return $this;
     }

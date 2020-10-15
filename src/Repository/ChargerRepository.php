@@ -23,22 +23,45 @@ class ChargerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->orderBy('c.id', 'ASC')
-            ->setMaxResults(100)
+            ->setMaxResults(75)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
-
-    /*
-    public function findOneBySomeField($value): ?Charger
+    public function findChargersByLatLong(string $lat, string $long)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT
+            id,
+            name,
+            is_available,
+            latitude,
+            longitude,
+            uuid,
+            (
+              6371 * acos (
+              cos ( radians(:lat) )
+              * cos( radians( latitude ) )
+              * cos( radians( longitude ) - radians(:long) )
+              + sin ( radians(:lat) )
+              * sin( radians( latitude ) )
+            )
+        ) AS distance
+        FROM charger
+        HAVING distance < 10
+        ORDER BY distance
+        LIMIT 75;";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(
+            [
+                'lat' => $lat,
+                'long' => $long
+            ]
+        );
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $stmt->fetchAll();
     }
-    */
 }

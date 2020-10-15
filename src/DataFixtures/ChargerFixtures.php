@@ -8,11 +8,18 @@ use App\Util\GenerateUtil;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
+/*
+ * Solution for running the migrations
+ *
+ * This is bad practice !!
+ */
+ini_set('memory_limit', '-1');
+
 class ChargerFixtures extends Fixture
 {
     private function _getChargersFromApi()
     {
-        $chargers = file_get_contents("https://api.openchargemap.io/v3/poi/?output=json&verbose=false&maxresults=5000&compact=true&countrycode=NL&key=API_KEY_HERE");
+        $chargers = file_get_contents(__DIR__ .'/../Data/Chargers.json');
 
         return json_decode($chargers, true);
     }
@@ -21,7 +28,10 @@ class ChargerFixtures extends Fixture
     {
         $count = 0;
         foreach ($this->_getChargersFromApi() as $charger) {
-            if (isset($charger['AddressInfo'])) {
+            if (
+                isset($charger['AddressInfo']) &&
+                isset($charger['AddressInfo']['Title'])
+            ) {
                 $lat = $charger['AddressInfo']['Latitude'];
                 $long = $charger['AddressInfo']['Longitude'];
 
@@ -30,7 +40,11 @@ class ChargerFixtures extends Fixture
                     ->setLatitude($lat)
                     ->setUuid(GenerateUtil::generateUuid())
                     ->setLongitude($long)
-                    ->setName($charger['AddressInfo']['Title']);
+                    ->setName($charger['AddressInfo']['Title'])
+                    ->setAddressLine($charger['AddressInfo']['AddressLine1'] ?? "")
+                    ->setTown($charger['AddressInfo']['Town'] ?? "")
+                    ->setStateOrProvince($charger['AddressInfo']['StateOrProvince'] ?? "")
+                    ->setPostcode($charger['AddressInfo']['Postcode'] ?? "");
 
                 $manager->persist($c);
 
