@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ChargerConnectionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -52,6 +54,16 @@ class ChargerConnection
      * @ORM\Column(type="integer")
      */
     private $Quantity;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reservation::class, mappedBy="chargerConnection", orphanRemoval=true)
+     */
+    private $reservations;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -506,6 +518,37 @@ class ChargerConnection
     public function setQuantity(int $Quantity): self
     {
         $this->Quantity = $Quantity;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reservation[]
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations[] = $reservation;
+            $reservation->setChargerConnection($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self
+    {
+        if ($this->reservations->contains($reservation)) {
+            $this->reservations->removeElement($reservation);
+            // set the owning side to null (unless already changed)
+            if ($reservation->getChargerConnection() === $this) {
+                $reservation->setChargerConnection(null);
+            }
+        }
 
         return $this;
     }
