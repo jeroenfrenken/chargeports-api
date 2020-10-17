@@ -51,33 +51,39 @@ class Charger
     private $uuid;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $addressLine;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $town;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $stateOrProvince;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups("read")
+     */
+    private $postcode;
+
+    /**
      * @ORM\OneToMany(targetEntity=ChargerConnection::class, mappedBy="charger", orphanRemoval=true)
+     * @Groups("read")
      */
     private $chargerConnections;
 
     /**
-     * @ORM\Column(type="string", length=255)
      * @Groups("read")
      */
-    private $AddressLine;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups("read")
-     */
-    private $Town;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups("read")
-     */
-    private $StateOrProvince;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups("read")
-     */
-    private $Postcode;
+    private string $distance = "0";
 
     public function __construct()
     {
@@ -180,49 +186,60 @@ class Charger
 
     public function getAddressLine(): ?string
     {
-        return $this->AddressLine;
+        return $this->addressLine;
     }
 
     public function setAddressLine(string $AddressLine): self
     {
-        $this->AddressLine = $AddressLine;
+        $this->addressLine = $AddressLine;
 
         return $this;
     }
 
     public function getTown(): ?string
     {
-        return $this->Town;
+        return $this->town;
     }
 
     public function setTown(string $Town): self
     {
-        $this->Town = $Town;
+        $this->town = $Town;
 
         return $this;
     }
 
     public function getStateOrProvince(): ?string
     {
-        return $this->StateOrProvince;
+        return $this->stateOrProvince;
     }
 
     public function setStateOrProvince(string $StateOrProvince): self
     {
-        $this->StateOrProvince = $StateOrProvince;
+        $this->stateOrProvince = $StateOrProvince;
 
         return $this;
     }
 
     public function getPostcode(): ?string
     {
-        return $this->Postcode;
+        return $this->postcode;
     }
 
     public function setPostcode(string $Postcode): self
     {
-        $this->Postcode = $Postcode;
+        $this->postcode = $Postcode;
 
+        return $this;
+    }
+
+    public function getDistance(): string
+    {
+        return number_format($this->distance, 2);
+    }
+
+    public function setDistance(string $distance): self
+    {
+        $this->distance = $distance;
         return $this;
     }
 }
