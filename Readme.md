@@ -27,6 +27,15 @@ In the docker container execute
 
 Say `yes`
 
+### Running Fixtures
+This will load a couple of thousand chargers in the database
+
+In the docker container execute
+
+`php bin/console doctrine:fixtures:load`
+
+Say `yes`
+
 ### Access OpenApi UI
 
 You can view the api documentation under `http://localhost/api/doc`
