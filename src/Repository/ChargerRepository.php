@@ -44,7 +44,7 @@ class ChargerRepository extends ServiceEntityRepository
             ->setParameter("lat", $lat)
             ->setParameter("long", $long)
             ->orderBy("distance", "ASC")
-            ->setMaxResults(75)
+            ->setMaxResults(25)
             ->getQuery()
             ->getResult('ChargerHydration');
     }
