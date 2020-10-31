@@ -84,12 +84,4 @@ class ReservationController extends AbstractController
             'message' => 'Error'
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-
-    /**
-     * @Route("/{uuid}", methods={"GET"})
-     */
-    public function getReservation()
-    {
-
-    }
 }
