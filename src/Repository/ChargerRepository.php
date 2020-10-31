@@ -30,38 +30,22 @@ class ChargerRepository extends ServiceEntityRepository
 
     public function findChargersByLatLong(string $lat, string $long)
     {
-        $conn = $this->getEntityManager()->getConnection();
-
-        $sql = "SELECT
-            id,
-            name,
-            is_available,
-            latitude,
-            longitude,
-            uuid,
-            (
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->addSelect("(
               6371 * acos (
               cos ( radians(:lat) )
-              * cos( radians( latitude ) )
-              * cos( radians( longitude ) - radians(:long) )
+              * cos( radians( c.latitude ) )
+              * cos( radians( c.longitude ) - radians(:long) )
               + sin ( radians(:lat) )
-              * sin( radians( latitude ) )
-            )
-        ) AS distance
-        FROM charger
-        HAVING distance < 10
-        ORDER BY distance
-        LIMIT 75;";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->execute(
-            [
-                'lat' => $lat,
-                'long' => $long
-            ]
-        );
-
-        // returns an array of arrays (i.e. a raw data set)
-        return $stmt->fetchAll();
+              * sin( radians( c.latitude ) )
+              )
+              ) AS distance")
+            ->setParameter("lat", $lat)
+            ->setParameter("long", $long)
+            ->orderBy("distance", "ASC")
+            ->setMaxResults(25)
+            ->getQuery()
+            ->getResult('ChargerHydration');
     }
 }
