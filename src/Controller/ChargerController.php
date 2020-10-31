@@ -65,7 +65,7 @@ class ChargerController extends AbstractController
         ChargerRepository $chargerRepository
     )
     {
-        if ($request->get('query') !== null) {
+        if (strlen($request->get('query')) > 0) {
             return $this->json($chargerRepository->findChargersByQuery($request->get('query')), Response::HTTP_OK, [], [
                 'groups' => 'read'
             ]);
