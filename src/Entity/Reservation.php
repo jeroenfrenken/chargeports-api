@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ReservationRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ReservationRepository::class)
@@ -25,16 +27,19 @@ class Reservation
     private $user;
 
     /**
+     * @Groups("read")
      * @ORM\Column(type="datetime")
      */
     private $startTime;
 
     /**
+     * @Groups("read")
      * @ORM\Column(type="datetime")
      */
     private $endTime;
 
     /**
+     * @Groups("read")
      * @ORM\ManyToOne(targetEntity=ChargerConnection::class, inversedBy="reservations")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -50,7 +55,7 @@ class Reservation
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
