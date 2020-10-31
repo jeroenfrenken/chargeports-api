@@ -28,4 +28,17 @@ class ChargerControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testChargersByLatLong()
+    {
+        $params = [
+            'query' => [
+                'lat' => 53.335303,
+                'long' => 6.587969
+            ]
+        ];
+        $response = $this->http->request('GET', 'charger/search',$params);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
 }
