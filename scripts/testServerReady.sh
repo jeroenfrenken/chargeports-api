@@ -1,6 +1,6 @@
 #!/bin/bash
 attempt_counter=0
-max_attempts=12
+max_attempts=36
 
 until $(curl --output /dev/null --silent --head --fail http://localhost/api/doc); do
   if [ ${attempt_counter} -eq ${max_attempts} ];then
