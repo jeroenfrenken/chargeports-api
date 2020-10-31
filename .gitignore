@@ -22,3 +22,7 @@ data-mysql
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###< temporary vim files ####
+.swp
+###> temporary vim files
