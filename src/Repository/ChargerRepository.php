@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Charger;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Charger|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,5 +48,22 @@ class ChargerRepository extends ServiceEntityRepository
             ->setMaxResults(25)
             ->getQuery()
             ->getResult('ChargerHydration');
+    }
+
+    public function findChargersByQuery(string $query)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        return $qb
+            ->select('c')
+            ->where($qb->expr()->like('c.name', ':query'))
+            ->orWhere($qb->expr()->like('c.addressLine', ':query'))
+            ->orWhere($qb->expr()->like('c.town', ':query'))
+            ->orWhere($qb->expr()->like('c.stateOrProvince', ':query'))
+            ->setParameter('query', "%${query}%")
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults(50)
+            ->getQuery()
+            ->getResult();
     }
 }

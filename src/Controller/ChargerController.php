@@ -19,36 +19,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChargerController extends AbstractController
 {
     /**
-     * @Route("", methods={"GET"})
-     *
-     * @OA\Get(
-     *     operationId="chargersAll"
-     * )
-     *
-     * @OA\Response(
-     *     response="200",
-     *     description="Fetches the chargers",
-     *     @OA\JsonContent(
-     *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\Charger::class, groups={"read"}))
-     *     )
-     * )
-     *
-     * @param ChargerRepository $chargerRepository
-     * @return JsonResponse
-     */
-    public function chargers(ChargerRepository $chargerRepository)
-    {
-        return $this->json($chargerRepository->findChargers(), Response::HTTP_OK, [], [
-            'groups' => 'read'
-        ]);
-    }
-
-    /**
      * @Route("/search", methods={"GET"})
      *
      * @OA\Get(
-     *     operationId="chargersSearch"
+     *     operationId="chargersSearch",
+     *     security={}
+     * )
+     *
+     * @OA\Parameter(
+     *     name="query",
+     *     in="query",
+     *     description="Search charger",
+     *     @OA\Schema(type="string")
      * )
      *
      * @OA\Parameter(
@@ -78,13 +60,19 @@ class ChargerController extends AbstractController
      * @param ChargerRepository $chargerRepository
      * @return JsonResponse
      */
-    public function chargersByLatLong(
+    public function chargerSearch(
         Request $request,
         ChargerRepository $chargerRepository
     )
     {
-        return $this->json($chargerRepository->findChargersByLatLong($request->get('lat'), $request->get('long')), Response::HTTP_OK, [], [
-            'groups' => 'read'
-        ]);
+        if ($request->get('query') !== null) {
+            return $this->json($chargerRepository->findChargersByQuery($request->get('query')), Response::HTTP_OK, [], [
+                'groups' => 'read'
+            ]);
+        } else {
+            return $this->json($chargerRepository->findChargersByLatLong($request->get('lat'), $request->get('long')), Response::HTTP_OK, [], [
+                'groups' => 'read'
+            ]);
+        }
     }
 }
