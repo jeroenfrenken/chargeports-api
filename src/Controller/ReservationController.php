@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Reservation;
-use App\Entity\User;
 use App\Form\ReservationType;
 use App\Model\ReservationDTO;
+use App\Repository\ReservationRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -17,8 +17,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class ReservationController
@@ -31,7 +29,7 @@ class ReservationController extends AbstractController
     /**
      * @Route("", methods={"POST"})
      *
-     * @OA\Get(
+     * @OA\Post(
      *     operationId="reservationCreate"
      * )
      *
@@ -42,21 +40,17 @@ class ReservationController extends AbstractController
      * @OA\Response(
      *     response="200",
      *     description="Created the reservation",
-     *     @OA\JsonContent(
-     *        type="array",
-     *        @OA\Items(ref=@Model(type=App\Entity\Reservation::class, groups={"read"}))
-     *     )
+     *     @Model(type=App\Entity\Reservation::class, groups={"read"})
      * )
      *
      * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @param EntityManagerInterface $em
-     * @param UserInterface $user
      * @return JsonResponse
      * @throws Exception
      */
-    public function createReservation(Request $request, EntityManagerInterface $em, UserInterface $user)
+    public function createReservation(Request $request, EntityManagerInterface $em)
     {
         $reservationDto = new ReservationDTO();
 
@@ -67,7 +61,7 @@ class ReservationController extends AbstractController
 
         if ($form->isSubmitted()) {
             $reservation = (new Reservation())
-                ->setUser($user)
+                ->setUser($this->getUser())
                 ->setChargerConnection($reservationDto->getChargerConnection())
                 ->setStartTime(new DateTime($data['startTime']))
                 ->setEndTime(new DateTime($data['endTime']));
@@ -75,7 +69,7 @@ class ReservationController extends AbstractController
             $em->persist($reservation);
             $em->flush();
 
-            return $this->json($reservation,Response::HTTP_OK, [], [
+            return $this->json($reservation, Response::HTTP_OK, [], [
                 'groups' => 'read'
             ]);
         }
@@ -83,5 +77,61 @@ class ReservationController extends AbstractController
         return $this->json([
             'message' => 'Error'
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @Route("/previous", methods={"GET"})
+     *
+     * @OA\Get(
+     *     operationId="previousReservations"
+     * )
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Fetches the previous reservations",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=App\Entity\Reservation::class, groups={"read"}))
+     *     )
+     * )
+     *
+     * @IsGranted("ROLE_USER")
+     *
+     * @param ReservationRepository $repository
+     * @return JsonResponse
+     */
+    public function previousReservation(ReservationRepository $repository)
+    {
+        return $this->json($repository->findBeforeTime(new DateTime(), $this->getUser()), Response::HTTP_OK, [], [
+            'groups' => 'read'
+        ]);
+    }
+
+    /**
+     * @Route("/upcoming", methods={"GET"})
+     *
+     * @OA\Get(
+     *     operationId="upcomingReservations"
+     * )
+     *
+     * @OA\Response(
+     *     response="200",
+     *     description="Fetches the upcoming reservations",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=App\Entity\Reservation::class, groups={"read"}))
+     *     )
+     * )
+     *
+     * @IsGranted("ROLE_USER")
+     *
+     * @param ReservationRepository $repository
+     * @return JsonResponse
+     */
+    public function upComingReservation(ReservationRepository $repository)
+    {
+        return $this->json($repository->findAfterTime(new DateTime(), $this->getUser()), Response::HTTP_OK, [], [
+            'groups' => 'read'
+        ]);
     }
 }
