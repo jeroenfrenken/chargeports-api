@@ -111,7 +111,7 @@ class ReservationController extends AbstractController
      * @Route("/upcoming", methods={"GET"})
      *
      * @OA\Get(
-     *     operationId="upcommingReservations"
+     *     operationId="upcomingReservations"
      * )
      *
      * @OA\Response(
